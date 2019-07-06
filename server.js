@@ -1,40 +1,54 @@
-const express = require('express');
+const express = require('express')
 const bodyParser= require('body-parser')
+const dbConfig = require('./config/db.config.js')
+const mongoose = require('mongoose')
 
-const app = express();
+const app = express()
 
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
+
+app.set('views', './src/views');
 app.set('view engine', 'ejs')
 
-var MongoClient = require('mongodb').MongoClient;
+app.get('/', (req, res) => {
+    res.render('pages/index')
+})
 
-// Connect to the db
-MongoClient.connect("mongodb://localhost:27017", function (err, client) {
-    if(err) { return console.dir(err); }
+require('./src/routes/subject.routes.js')(app)
+require('./src/routes/topic.routes.js')(app)
+require('./src/routes/concept.routes.js')(app)
 
-    console.log("we are connected"); 
-    var db = client.db("ogma");
 
-    app.listen(3000, function() {
-        console.log('listening on 3000')
-    })
-    
-    app.get('/', (req, res) => {
-        var cursor = db.collection("concepts").find();
-        cursor.toArray(function(err, result) {
-            if (err) return console.log(err)
-            // renders index.ejs
-            res.render('index.ejs', {concepts: result})
-          })
-    })
-    
-    app.post('/concepts', (req, res) => {
-        db.collection('concepts').insertOne(req.body, (err, result) => {
-            if (err) return console.log(err)
-        
-            console.log('saved to database')
-            res.redirect('/')
-          })
-    })
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    next(createError(404));
+  });
+  
+  // error handler
+  app.use(function(err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+  
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+  });
 
+// listen for requests
+app.listen(3000, () => {
+    console.log("Server is listening on port 3000")
+})
+
+mongoose.Promise = global.Promise;
+
+// Connecting to the database
+mongoose.connect(dbConfig.url, {
+    useNewUrlParser: true
+}).then(() => {
+    console.log("Successfully connected to the database");    
+}).catch(err => {
+    console.log('Could not connect to the database. Exiting now...', err);
+    process.exit();
 });

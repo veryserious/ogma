@@ -1,0 +1,48 @@
+<% include ../partials/head %>
+<script src="https://cdn.ckeditor.com/ckeditor5/12.2.0/classic/ckeditor.js"></script>
+<body>
+  <% include ../partials/header %>
+  <div class="container py-5">
+    <h1><%= title %></h1>
+    <form method="POST" action="">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" name="title" class="form-control" id="title" aria-describedby="titleHelp" placeholder="Enter title" value="<%= locals.concept ? locals.concept.title : '' %>">
+        </div>
+        <div class="form-group">
+          <label for="topic">Topic</label>
+            <select class="form-control" id="topics" name="topics">
+              <% topics.forEach(topic => { %>
+                <option value="<%= topic._id %>"><%- topic.title %></option>
+              <% }); %>
+            </select>
+        </div>
+        <div class="form-group">
+          <label for="content">Content</label>
+          <!--<input type="text" name="content" class="form-control" id="content" aria-describedby="contentHelp" placeholder="Enter content" >-->
+           <textarea name="content" id="editor" >
+              <%= locals.concept ? locals.concept.content : '' %> %>
+            </textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <% if(errors){ %> 
+        <ul>
+            <% errors.forEach(error => { %>
+               <li><%= error.msg %></li> 
+            <% }); %>
+        </ul>
+    <%}%> 
+  </div>
+ <script>
+        ClassicEditor
+            .create( document.querySelector( '#editor' ) )
+            .catch( error => {
+                console.error( error );
+            } );
+  </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>
