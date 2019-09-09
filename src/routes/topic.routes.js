@@ -13,8 +13,11 @@ module.exports = (app) => {
     // Retrieve a single topic with topicId
     app.get('/topics/:topicId', topics.findOne);
 
+    // Get the update topic form with topicId
+    app.get('/topics/:topicId/update', topics.updateGet);
+
     // Update a topic with topicId
-    app.put('/topics/:topicId', topics.update);
+    app.post('/topics/:topicId/update', topics.updatePost);
 
     // Delete a topic with topicId
     app.delete('/topics/:topicId', topics.delete);

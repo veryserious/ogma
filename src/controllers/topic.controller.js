@@ -104,7 +104,7 @@ exports.findOne = (req, res, next) => {
         topicConcepts: function(callback) {
             Concept.find({ 'topics': req.params.topicId })
               .exec(callback);
-        },
+        }
 
     }, function(err, results) {
         if (err) { return next(err); }
@@ -115,6 +115,48 @@ exports.findOne = (req, res, next) => {
         }
         // Successful, so render
         res.render('pages/topicSingle', { title: 'Topic Single', topic: results.topic, topicConcepts: results.topicConcepts } );
+    });
+};
+
+exports.updateGet = (req, res) => {
+    Topic.findById(req.params.topicId)
+    .populate('subjects')
+    .then(topic => {
+        res.render('forms/topicForm', { title: 'Update topic', subjects: topic.subjects, topic: topic, errors: null });
+    });
+};
+
+// Update a concept identified by the conceptId in the request
+exports.updatePost = (req, res) => {
+    // Validate Request
+    if(!req.body.title) {
+        return res.status(400).send({
+            message: "Title can not be empty"
+        });
+    }
+
+    // Find topic and update it with the request body
+    Topic.findByIdAndUpdate(req.params.topicId, {
+        title: req.body.title || "Untitled topic",
+        description: req.body.description,
+    }, {new: true})
+    .then(topic => {
+        if(!topic) {
+            return res.status(404).send({
+                message: "topic not found with id " + req.params.topicId
+            });
+        }
+        res.redirect(topic.url);
+    }).catch(err => {
+        if(err.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "topic not found with id " + req.params.topicId
+            });                
+        }
+        console.log(err);
+        return res.status(500).send({
+            message: "Error updating topic with id " + req.params.topicId
+        });
     });
 };
 

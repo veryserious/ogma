@@ -2,6 +2,11 @@ const Concept = require('../models/concept.model.js');
 const Topic = require('../models/topic.model.js');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
+const dotenv = require('dotenv');
+dotenv.config();
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
 
 // Create and Save a new Concept
 
@@ -137,6 +142,7 @@ exports.updatePost = (req, res) => {
     Concept.findByIdAndUpdate(req.params.conceptId, {
         title: req.body.title || "Untitled Concept",
         topics: req.body.topics,
+        summary: req.body.summary,
         content: req.body.content
     }, {new: true})
     .then(concept => {
@@ -176,6 +182,35 @@ exports.delete = (req, res) => {
         }
         return res.status(500).send({
             message: "Could not delete concept with id " + req.params.conceptId
+        });
+    });
+};
+
+// send an sms to cheese to remind me of a concept given an id
+exports.sms = (req, res) => {
+    Concept.findById(req.params.conceptId)
+    .then(concept => {
+        if(!concept) {
+            return res.status(404).send({
+                message: "Concept not found with id " + req.params.conceptId
+            });            
+        }
+        client.messages
+        .create({
+            body: 'STUDY REMINDER ' + concept.title + ': ' + concept.summary,
+            from: '+61488807427',
+            to: '+61452367553'
+            //to: '+61468721634'
+        })
+        .then(res.redirect('/concepts/' + req.params.conceptId));
+    }).catch(err => {
+        if(err.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "Concept not found with id " + req.params.conceptId
+            });                
+        }
+        return res.status(500).send({
+            message: "Error retrieving concept with id " + req.params.conceptId
         });
     });
 };

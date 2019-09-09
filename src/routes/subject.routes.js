@@ -13,6 +13,12 @@ module.exports = (app) => {
     // Retrieve a single Subject with subjectId
     app.get('/subjects/:subjectId', subjects.findOne);
 
+    // Get the update subject form with subjectId
+    app.get('/subjects/:subjectId/update', subjects.updateGet);
+
+    // Update a subject with subjectId
+    app.post('/subjects/:subjectId/update', subjects.updatePost);
+
     // Update a Subject with subjectId
     app.put('/subjects/:subjectId', subjects.update);
 

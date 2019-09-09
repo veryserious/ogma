@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const ConceptSchema = mongoose.Schema({
     title: String,
+    summary: String,
     content: String,
     topics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }]
 }, {

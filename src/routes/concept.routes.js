@@ -9,7 +9,7 @@ module.exports = (app) => {
     app.post('/concepts/create', concepts.create_post);
 
     // Retrieve all concepts
-    app.get('/concepts', concepts.findAll)
+    app.get('/concepts', concepts.findAll);
 
     // Retrieve a single concept with conceptId
     app.get('/concepts/:conceptId', concepts.findOne);
@@ -22,4 +22,7 @@ module.exports = (app) => {
 
     // Delete a concept with conceptId
     app.get('/concepts/:conceptId/delete', concepts.delete);
+
+    // Retrieve a single concept with conceptId
+    app.get('/concepts/:conceptId/sms', concepts.sms);
 }

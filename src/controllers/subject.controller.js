@@ -103,6 +103,47 @@ exports.findOne = (req, res, next) => {
     });
 };
 
+exports.updateGet = (req, res) => {
+    Subject.findById(req.params.subjectId)
+    .then(subject => {
+        res.render('forms/subjectForm', { title: 'Update Subject', subject: subject, errors: null });
+    });
+};
+
+// Update a concept identified by the conceptId in the request
+exports.updatePost = (req, res) => {
+    // Validate Request
+    if(!req.body.title) {
+        return res.status(400).send({
+            message: "Title can not be empty"
+        });
+    }
+
+    // Find subject and update it with the request body
+    Subject.findByIdAndUpdate(req.params.subjectId, {
+        title: req.body.title || "Untitled subject",
+        description: req.body.description,
+    }, {new: true})
+    .then(subject => {
+        if(!subject) {
+            return res.status(404).send({
+                message: "subject not found with id " + req.params.subjectId
+            });
+        }
+        res.redirect(subject.url);
+    }).catch(err => {
+        if(err.kind === 'ObjectId') {
+            return res.status(404).send({
+                message: "subject not found with id " + req.params.subjectId
+            });                
+        }
+        console.log(err);
+        return res.status(500).send({
+            message: "Error updating subject with id " + req.params.subjectId
+        });
+    });
+};
+
 // Update a subject identified by the subjectId in the request
 exports.update = (req, res) => {
     // Validate Request

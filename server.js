@@ -2,9 +2,11 @@ const express = require('express')
 const bodyParser= require('body-parser')
 const dbConfig = require('./config/db.config.js')
 const mongoose = require('mongoose')
+const cors = require('cors');
 
 const app = express()
 
+app.use(cors())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
@@ -15,6 +17,8 @@ app.get('/', (req, res) => {
     res.render('pages/index')
 })
 
+require('./src/routes/api.routes.js')(app)
+require('./src/routes/unit.routes.js')(app)
 require('./src/routes/subject.routes.js')(app)
 require('./src/routes/topic.routes.js')(app)
 require('./src/routes/concept.routes.js')(app)
@@ -41,8 +45,8 @@ app.listen(3000, () => {
     console.log("Server is listening on port 3000")
 })
 
+mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
-
 // Connecting to the database
 mongoose.connect(dbConfig.url, {
     useNewUrlParser: true
