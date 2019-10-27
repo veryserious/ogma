@@ -1,5 +1,4 @@
-const Concept = require('../models/concept.model.js');
-const Topic = require('../models/topic.model.js');
+
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 const dotenv = require('dotenv');
@@ -7,6 +6,9 @@ dotenv.config();
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
+const url = require('url');
+const Concept = require('../models/concept.model.js');
+const Topic = require('../models/topic.model.js');
 
 // Create and Save a new Concept
 
@@ -14,7 +16,9 @@ const client = require('twilio')(accountSid, authToken);
 exports.create_get = function(req, res, next) {
     Topic.find()
     .then(results => {
-        res.render('forms/conceptForm', { title: 'Create Concept', topics: results, errors: null })
+        const q = url.parse(req.headers.referer, true);
+        currentTopic = q.pathname.split('/').pop();
+        res.render('forms/conceptForm', { title: 'Create Concept', topics: results, currentTopic: currentTopic, errors: null })
     });
   };
 
@@ -49,6 +53,7 @@ exports.create_post =  [
       var concept = new Concept(
         { title: req.body.title,
           topics: req.body.topics,
+          summary: req.body.summary,
           content: req.body.content,
          }
       );  
@@ -125,7 +130,7 @@ exports.updateGet = (req, res) => {
     Concept.findById(req.params.conceptId)
     .populate('topics')
     .then(concept => {
-        res.render('forms/conceptForm', { title: 'Update Concept', concept: concept, topics: concept.topics, errors: null });
+        res.render('forms/conceptForm', { title: 'Update Concept', concept: concept, topics: concept.topics, currentTopic: '', errors: null });
     });
 };
 

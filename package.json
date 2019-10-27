@@ -18,6 +18,9 @@
     "ejs": "^2.6.1",
     "express": "^4.16.3",
     "express-validator": "^6.1.0",
+    "graphql": "^14.5.8",
+    "graphql-server-express": "^1.4.1",
+    "graphql-tools": "^4.0.6",
     "jscs": "^3.0.7",
     "katex": "^0.10.2",
     "mongodb": "^3.1.4",
@@ -26,6 +29,8 @@
     "twilio": "^3.33.0"
   },
   "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
     "nodemon": "^1.18.4"
   },
   "repository": {

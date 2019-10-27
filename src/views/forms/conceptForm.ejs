@@ -13,7 +13,11 @@
           <label for="topic">Topic</label>
             <select class="form-control" id="topics" name="topics">
               <% topics.forEach(topic => { %>
+                <% if(topic._id == currentTopic) { %> 
+                  <option value="<%= topic._id %>" selected><%- topic.title %></option>
+                <% } else { %>
                 <option value="<%= topic._id %>"><%- topic.title %></option>
+                <% } %>
               <% }); %>
             </select>
         </div>

@@ -1,8 +1,14 @@
+const { graphqlExpress } = require('graphql-server-express');
 const express = require('express')
 const bodyParser= require('body-parser')
 const dbConfig = require('./config/db.config.js')
 const mongoose = require('mongoose')
 const cors = require('cors');
+
+const typeDefs = require('./schema');
+const resolvers = require('./resolvers');
+const { makeExecutableSchema } = require('graphql-tools');
+
 
 const app = express()
 
@@ -11,11 +17,18 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
 app.set('views', './src/views');
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
     res.render('pages/index')
-})
+});
+
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+});
+
+app.use('/graphql', bodyParser.json(), graphqlExpress({ schema }));
 
 require('./src/routes/api.routes.js')(app)
 require('./src/routes/unit.routes.js')(app)
