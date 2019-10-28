@@ -2,7 +2,7 @@ module.exports =
 `
 type Query {
     hi: String
-    allConcepts: [Concept]!
+    allConcepts(offset: Int, limit: Int): [Concept]!
 }
 
 type Concept {
